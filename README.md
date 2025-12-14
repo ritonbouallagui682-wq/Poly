@@ -1,55 +1,17 @@
-// mobile_app/lib/models/restaurant_model.dart (Дополнение)
+# 🛡️ aythena-fintech-compliance-manager: Управление Финансовым Мониторингом (AML/KYC)
 
-// ... (PriceRange, SafetyRating, AuthenaLicense, OperatingHours, Restaurant - остаются прежними) ...
+Этот репозиторий содержит код мобильного клиента (Flutter) для инициирования и мониторинга финансовых транзакций, с обязательной проверкой на соответствие стандартам AML/KYC платформы Authena.
 
-class RestaurantAvailability {
-  final int availableTables;
-  final DateTime nextAvailableTime;
-  final bool canBookNow;
-  
-  RestaurantAvailability({
-    required this.availableTables,
-    required this.nextAvailableTime,
-  }) : canBookNow = availableTables > 0;
-}
+## Архитектура
+* **Frontend:** Flutter/Dart (Riverpod, StateNotifier, Transaction Builder)
+* **Backend:** Python/Flask Mock (API для счетов, транзакций и списков санкций)
 
-// ... (Добавление в класс Restaurant) ...
-class Restaurant {
-  // ... (Остальные поля) ...
-  final double userScore; // Персонализированная оценка для пользователя
-  final RestaurantAvailability? availability; // Статус бронирования
-  
-  Restaurant({
-    // ... (Обязательные поля) ...
-    this.userScore = 0.0,
-    this.availability,
-  });
+## 🔑 Ключевые принципы
+1.  **Compliance-First:** Любая транзакция должна пройти локальную проверку `AuthenaComplianceService` перед отправкой на сервер.
+2.  **Transaction Builder:** Использование StateNotifier для пошагового создания и валидации транзакции.
+3.  **Risk Scoring:** Введение автоматического скоринга риска транзакции на стороне клиента.
+4.  **State Protection:** Отдельные провайдеры для статических данных (KYC статус) и динамических (текущий баланс).
 
-  factory Restaurant.fromJson(Map<String, dynamic> json) {
-    // ... (Парсинг остальных полей) ...
-    
-    final availabilityJson = json['availability'];
-    final availability = availabilityJson != null ? RestaurantAvailability(
-      availableTables: availabilityJson['tables'] ?? 0,
-      nextAvailableTime: DateTime.parse(availabilityJson['next_time'] ?? DateTime.now().toIso8601String()),
-    ) : null;
+---
 
-    return Restaurant(
-      // ... (Возврат остальных полей) ...
-      userScore: (json['user_score'] as num?)?.toDouble() ?? 0.0,
-      availability: availability,
-    );
-  }
-
-  // Метод для обновления только динамических полей (бронирование, счет)
-  Restaurant copyWith({double? userScore, RestaurantAvailability? availability}) {
-    return Restaurant(
-      id: id, name: name, cuisine: cuisine, latitude: latitude, longitude: longitude, 
-      price: price, safetyRating: safetyRating, license: license, hours: hours,
-      userScore: userScore ?? this.userScore,
-      availability: availability ?? this.availability,
-    );
-  }
-}
-
-// ... (RestaurantFilters остается прежним) ...
+## 📂 Структура проекта
